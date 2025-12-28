@@ -4,23 +4,27 @@
 <meta charset="UTF-8">
 <title>▶ ●───ᴅᴛᴢ ɴᴏᴠᴀ xᴍᴅ────▶ ●</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
-* { box-sizing: border-box; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
   margin: 0;
-  font-family: 'Segoe UI', sans-serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: #fff;
   min-height: 100vh;
   background:
-    linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+    linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.9)),
     url("https://files.catbox.moe/oec33n.png") center / cover no-repeat fixed;
   overflow-x: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
 }
 
-
-/* ❄️ Snow container */
+/* ❄️ Snow effects */
 .snow {
   position: fixed;
   top: 0;
@@ -28,15 +32,12 @@ body {
   width: 100%;
   height: 100%;
   pointer-events: none;
-  z-index: 999;
+  z-index: 1;
+  overflow: hidden;
 }
 
-/* ❄️ Snow flakes */
-.snow span {
+.snowflake {
   position: absolute;
-  top: -10px;
-  width: 6px;
-  height: 6px;
   background: white;
   border-radius: 50%;
   opacity: 0.8;
@@ -44,174 +45,459 @@ body {
 }
 
 @keyframes fall {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(110vh); }
+  0% { transform: translateY(-10px) translateX(0); }
+  100% { transform: translateY(110vh) translateX(20px); }
 }
 
-/* 🔥 Main content */
+/* Main Container */
 .container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 40px 15px;
-  min-height: 100vh;
-  text-align: center;
+  width: 100%;
+  max-width: 480px;
+  z-index: 2;
+  position: relative;
 }
 
-h1 {
+/* Header */
+.header {
+  text-align: center;
+  margin-bottom: 30px;
+  animation: glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+  from { text-shadow: 0 0 10px #ff2d2d, 0 0 20px #ff2d2d; }
+  to { text-shadow: 0 0 20px #ff6a00, 0 0 30px #ff6a00; }
+}
+
+.header h1 {
   color: #ff2d2d;
-  font-size: 30px;
-  text-shadow: 0 0 20px rgba(255,45,45,0.8);
+  font-size: 28px;
+  margin-bottom: 8px;
+  letter-spacing: 1px;
 }
 
 .subtitle {
-  margin-bottom: 25px;
+  color: #aaa;
   font-size: 14px;
-  opacity: 0.85;
+  margin-bottom: 5px;
 }
 
+.version {
+  background: rgba(255, 45, 45, 0.2);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  display: inline-block;
+  margin-top: 5px;
+}
+
+/* Card */
 .card {
-  background: rgba(0,0,0,0.65);
-  border: 1px solid rgba(255,0,0,0.4);
-  border-radius: 16px;
-  padding: 25px;
-  width: 100%;
-  max-width: 420px;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 0 25px rgba(255,0,0,0.3);
+  background: rgba(20, 20, 20, 0.9);
+  border: 2px solid rgba(255, 45, 45, 0.3);
+  border-radius: 20px;
+  padding: 30px;
+  backdrop-filter: blur(15px);
+  box-shadow: 0 10px 30px rgba(255, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  border-color: rgba(255, 45, 45, 0.6);
+  box-shadow: 0 15px 40px rgba(255, 0, 0, 0.3);
+}
+
+/* Form */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.label {
+  display: block;
+  margin-bottom: 8px;
+  color: #ff6a00;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.input-wrapper {
+  position: relative;
+}
+
+.input-icon {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #666;
+  font-size: 18px;
 }
 
 input {
   width: 100%;
-  padding: 14px;
-  margin-bottom: 15px;
-  border-radius: 10px;
-  border: none;
+  padding: 15px 15px 15px 50px;
+  border-radius: 12px;
+  border: 2px solid #333;
   outline: none;
-  background: #111;
+  background: rgba(10, 10, 10, 0.8);
   color: #fff;
   font-size: 16px;
+  transition: all 0.3s ease;
 }
 
-button {
+input:focus {
+  border-color: #ff2d2d;
+  background: rgba(15, 15, 15, 0.9);
+  box-shadow: 0 0 15px rgba(255, 45, 45, 0.3);
+}
+
+input::placeholder {
+  color: #666;
+}
+
+/* Button */
+.btn {
   width: 100%;
-  padding: 14px;
-  border-radius: 10px;
+  padding: 16px;
+  border-radius: 12px;
   border: none;
   background: linear-gradient(135deg, #ff2d2d, #ff6a00);
   color: #000;
   font-weight: bold;
-  font-size: 17px;
+  font-size: 16px;
   cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
 }
 
-button:hover {
-  box-shadow: 0 0 20px rgba(255,100,0,0.7);
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(255, 100, 0, 0.5);
 }
 
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Output */
 .output {
-  display: none;
-  margin-top: 15px;
-  background: #0b0b0b;
-  padding: 12px;
-  border-radius: 10px;
+  margin-top: 25px;
+  background: rgba(5, 5, 5, 0.8);
+  padding: 20px;
+  border-radius: 12px;
   border: 1px solid #333;
   word-break: break-all;
+  display: none;
+  animation: slideIn 0.3s ease;
 }
 
-/* ⏰ Time box */
-.time-box {
-  margin-top: 20px;
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.output-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.output-title {
+  color: #4CAF50;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.output-content {
+  color: #fff;
+  font-family: monospace;
   font-size: 14px;
-  opacity: 0.9;
+  line-height: 1.5;
 }
 
-footer {
+.output.success .output-title { color: #4CAF50; }
+.output.error .output-title { color: #ff4444; }
+.output.info .output-title { color: #2196F3; }
+
+/* Time Box */
+.time-box {
   margin-top: 25px;
-  font-size: 12px;
-  opacity: 0.75;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 15px;
+  border-radius: 12px;
+  text-align: center;
+  font-size: 14px;
+  color: #aaa;
+}
+
+.time-box i {
+  color: #ff2d2d;
+  margin-right: 8px;
+}
+
+/* Footer */
+footer {
+  margin-top: 30px;
+  text-align: center;
+  font-size: 13px;
+  color: #777;
+  line-height: 1.6;
 }
 
 footer span {
   color: #ff4d4d;
+  font-weight: bold;
+}
+
+footer a {
+  color: #ff6a00;
+  text-decoration: none;
+}
+
+footer a:hover {
+  text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .container {
+    padding: 10px;
+  }
+  
+  .card {
+    padding: 20px;
+  }
+  
+  .header h1 {
+    font-size: 24px;
+  }
 }
 </style>
 </head>
 
 <body>
 
-<!-- ❄️ Snow -->
+<!-- ❄️ Snow Effect -->
 <div class="snow" id="snow"></div>
 
 <div class="container">
-
-  <h1>▶ ●───ᴅᴛᴢ ɴᴏᴠᴀ xᴍᴅ────▶ ●</h1>
-  <div class="subtitle">DTZ NOVA XMD – WhatsApp Web Pair</div>
-
-  <div class="card">
-    <input type="text" id="number" placeholder="Enter WhatsApp Number (e.g. 947XXXXXXXX)">
-    <button onclick="getCode()">Generate Pair Code</button>
-    <div id="result" class="output"></div>
+  <div class="header">
+    <h1>▶ ●───ᴅᴛᴢ ɴᴏᴠᴀ xᴍᴅ────▶ ●</h1>
+    <div class="subtitle">Advanced WhatsApp Web Pairing System</div>
+    <div class="version">v2.0.0</div>
   </div>
 
-  <div class="time-box" id="time"></div>
+  <div class="card">
+    <div class="form-group">
+      <label class="label"><i class="fas fa-phone"></i> WhatsApp Number</label>
+      <div class="input-wrapper">
+        <div class="input-icon"><i class="fas fa-user"></i></div>
+        <input 
+          type="text" 
+          id="number" 
+          placeholder="947XXXXXXXX (with country code)"
+          maxlength="15"
+        >
+      </div>
+    </div>
+
+    <button class="btn" onclick="getCode()" id="generateBtn">
+      <i class="fas fa-key"></i> Generate Pairing Code
+    </button>
+
+    <div id="result" class="output">
+      <div class="output-header">
+        <div class="output-title">Result</div>
+        <button onclick="copyResult()" style="background:none;border:none;color:#fff;cursor:pointer;">
+          <i class="fas fa-copy"></i>
+        </button>
+      </div>
+      <div class="output-content" id="resultContent">Waiting...</div>
+    </div>
+  </div>
+
+  <div class="time-box" id="time">
+    <i class="fas fa-clock"></i> Loading time...
+  </div>
 
   <footer>
-    👤 Owner: <span>Dulina</span><br>
-    ⚡ Team: <span>DTZ TEAM</span>
+    <p>👤 Owner: <span>Dulina</span> | ⚡ Team: <span>DTZ TEAM</span></p>
+    <p>📱 System Status: <span id="status">🟢 Online</span></p>
+    <p>🔗 <a href="https://github.com/alpha-x-team-ofc/DTZ_NOVA_XMD_FULL" target="_blank">GitHub Repository</a></p>
   </footer>
-
 </div>
 
 <script>
-/* ❄️ Snow generator */
-const snow = document.getElementById("snow");
-for (let i = 0; i < 60; i++) {
-  const flake = document.createElement("span");
-  flake.style.left = Math.random() * 100 + "vw";
-  flake.style.animationDuration = (3 + Math.random() * 7) + "s";
-  flake.style.opacity = Math.random();
-  flake.style.transform = `scale(${Math.random()})`;
-  snow.appendChild(flake);
+/* ❄️ Snow Generator */
+function createSnow() {
+  const snow = document.getElementById("snow");
+  for (let i = 0; i < 80; i++) {
+    const flake = document.createElement("div");
+    flake.className = "snowflake";
+    flake.style.left = Math.random() * 100 + "vw";
+    flake.style.width = flake.style.height = (3 + Math.random() * 5) + "px";
+    flake.style.opacity = 0.5 + Math.random() * 0.5;
+    flake.style.animationDuration = (5 + Math.random() * 10) + "s";
+    flake.style.animationDelay = Math.random() * 5 + "s";
+    snow.appendChild(flake);
+  }
 }
 
-/* ⏰ Time & Date */
+/* ⏰ Time Update */
 function updateTime() {
   const now = new Date();
-  document.getElementById("time").innerHTML =
-    "🕒 " + now.toLocaleTimeString() + "<br>📅 " + now.toDateString();
+  const timeStr = now.toLocaleTimeString('en-US', { 
+    hour12: false,
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit'
+  });
+  const dateStr = now.toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+  document.getElementById("time").innerHTML = 
+    `<i class="fas fa-clock"></i> ${timeStr} | ${dateStr}`;
 }
-setInterval(updateTime, 1000);
-updateTime();
 
-/* 🔗 Pair code fetch */
+/* 📋 Copy Result */
+function copyResult() {
+  const resultContent = document.getElementById("resultContent").textContent;
+  if (resultContent && resultContent !== "Waiting...") {
+    navigator.clipboard.writeText(resultContent).then(() => {
+      showToast("Copied to clipboard!");
+    });
+  }
+}
+
+/* 🎯 Toast Notification */
+function showToast(message, type = "info") {
+  const toast = document.createElement("div");
+  toast.textContent = message;
+  toast.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: ${type === "error" ? "#ff4444" : type === "success" ? "#4CAF50" : "#2196F3"};
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    z-index: 1000;
+    animation: slideInRight 0.3s ease, fadeOut 0.3s ease 2.7s;
+  `;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+}
+
+/* 🔗 Pair Code Fetch */
 async function getCode() {
-  const number = document.getElementById("number").value.trim();
+  const number = document.getElementById("number").value.trim().replace(/\D/g, '');
   const result = document.getElementById("result");
+  const resultContent = document.getElementById("resultContent");
+  const btn = document.getElementById("generateBtn");
 
-  if (!number) {
-    alert("Enter WhatsApp number");
+  // Validate number
+  if (!number || number.length < 10 || number.length > 15) {
+    showToast("Please enter a valid WhatsApp number (10-15 digits)", "error");
+    document.getElementById("number").focus();
     return;
   }
 
+  // Show loading state
   result.style.display = "block";
-  result.textContent = "⏳ Generating code...";
+  result.className = "output info";
+  resultContent.textContent = "⏳ Generating pairing code...";
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
 
   try {
-    const res = await fetch(`/code?number=${encodeURIComponent(number)}`);
-    const data = await res.json();
+    // Fetch pairing code
+    const response = await fetch(`/code?number=${encodeURIComponent(number)}`, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+      },
+      timeout: 30000
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || `HTTP ${response.status}`);
+    }
 
     if (data.code) {
-      result.textContent = "✅ Pairing Code: " + data.code;
+      result.className = "output success";
+      resultContent.innerHTML = `
+        <strong>✅ Pairing Code Generated!</strong><br><br>
+        <div style="background: #000; padding: 10px; border-radius: 5px; margin: 10px 0;">
+          <code style="font-size: 18px; letter-spacing: 2px;">${data.code}</code>
+        </div>
+        <strong>Instructions:</strong><br>
+        1. Open WhatsApp on your phone<br>
+        2. Go to Settings > Linked Devices<br>
+        3. Tap "Link a Device"<br>
+        4. Enter this code: <strong>${data.code}</strong><br><br>
+        <small style="color: #aaa;">Session ID will be sent to your WhatsApp once connected.</small>
+      `;
+      showToast("Pairing code generated successfully!", "success");
+      
+      // Check connection status periodically
+      checkConnectionStatus();
+    } else if (data.message) {
+      result.className = "output info";
+      resultContent.textContent = `ℹ️ ${data.message}`;
     } else {
-      result.textContent = "❌ Error: " + (data.error || "Unknown error");
+      throw new Error("No code received from server");
     }
-  } catch (e) {
-    result.textContent = "❌ Failed to connect";
+
+  } catch (error) {
+    console.error("Error:", error);
+    result.className = "output error";
+    resultContent.textContent = `❌ Error: ${error.message}`;
+    showToast("Failed to generate pairing code", "error");
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-key"></i> Generate Pairing Code';
   }
 }
-</script>
 
+/* 🔄 Check Connection Status */
+async function checkConnectionStatus() {
+  try {
+    const response = await fetch('/health');
+    const data = await response.json();
+    document.getElementById("status").innerHTML = "🟢 Online";
+    document.getElementById("status").style.color = "#4CAF50";
+  } catch (error) {
+    document.getElementById("status").innerHTML = "🔴 Offline";
+    document.getElementById("status").style.color = "#ff4444";
+  }
+}
+
+/* 📱 Initialize */
+document.addEventListener('DOMContentLoaded', () => {
+  createSnow();
+  updateTime();
+  setInterval(updateTime, 1000);
+  checkConnectionStatus();
+  
+  // Enter key support
+  document.getElementById("number").addEventListener("keypress", (e) => {
+    if (e.key === "Enter") getCode();
+  });
+});
+</script>
 </body>
 </html>
