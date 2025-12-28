@@ -1,18 +1,18 @@
 
 {
-  "name": "▶ ●───ᴅᴛᴢ ɴᴏᴠᴀ xᴍᴅ────▶ ●-PAIR",
+  "name": "PAIR",
   "version": "1.0.0",
   "description": "A multi-functional WhatsApp bot with web pairing functionality",
   "main": "index.js",
   "type": "commonjs",
   "scripts": {
-    "start": "pm2 start index.js --deep-monitoring --attach --name ▶ ●───ᴅᴛᴢ ɴᴏᴠᴀ xᴍᴅ────▶ ●",
-    "stop": "pm2 stop ▶ ●───ᴅᴛᴢ ɴᴏᴠᴀ xᴍᴅ────▶ ●",
-    "restart": "pm2 restart ▶ ●───ᴅᴛᴢ ɴᴏᴠᴀ xᴍᴅ────▶ ●",
+    "start": "pm2 start index.js --deep-monitoring --attach --name dtz",
+    "stop": "pm2 stop dtz",
+    "restart": "pm2 restart dtz",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "▶ ●───ᴅᴛᴢ ɴᴏᴠᴀ xᴍᴅ────▶ ●",
+  "author": "dtz",
   "license": "ISC",
   "dependencies": {
     "@adiwajshing/keyed-db": "^0.2.4",
