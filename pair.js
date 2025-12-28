@@ -19,44 +19,61 @@ if (!fs.existsSync(tempBaseDir)) {
     fs.mkdirSync(tempBaseDir, { recursive: true });
 }
 
+// Store active sessions
+const activeSessions = new Map();
+
 // Cleanup function
 function removeFolder(folderPath) {
     try {
         if (fs.existsSync(folderPath)) {
-            fs.rmSync(folderPath, { recursive: true, force: true });
-            console.log(`🧹 Cleaned: ${folderPath}`);
+            fs.readdirSync(folderPath).forEach(file => {
+                const curPath = path.join(folderPath, file);
+                if (fs.lstatSync(curPath).isDirectory()) {
+                    removeFolder(curPath);
+                } else {
+                    fs.unlinkSync(curPath);
+                }
+            });
+            fs.rmdirSync(folderPath);
         }
     } catch (err) {
         console.error('Cleanup error:', err.message);
     }
 }
 
-// Store active sessions
-const activeSessions = new Map();
-
 router.get('/', async (req, res) => {
-    const requestId = makeid(8);
-    const phoneNumber = (req.query.number || '').replace(/\D/g, '');
+    const sessionId = makeid(8);
+    let phoneNumber = req.query.number || '';
     
-    console.log(`📱 [${requestId}] Request for number: ${phoneNumber}`);
+    // Clean phone number (keep only digits)
+    phoneNumber = phoneNumber.replace(/\D/g, '');
     
-    if (!phoneNumber || phoneNumber.length < 10 || phoneNumber.length > 15) {
+    console.log(`📱 [${sessionId}] Request for number: ${phoneNumber}`);
+    
+    if (!phoneNumber || phoneNumber.length < 10) {
         return res.status(400).json({ 
-            error: "Please provide a valid phone number (10-15 digits)" 
+            error: "Please provide a valid WhatsApp number (at least 10 digits)",
+            example: "94712345678"
         });
     }
     
-    // Send immediate response with pairing code
+    // Ensure phone number has country code
+    if (!phoneNumber.startsWith('94') && phoneNumber.length === 9) {
+        phoneNumber = '94' + phoneNumber; // Add Sri Lanka country code
+    }
+    
+    const tempDir = path.join(tempBaseDir, sessionId);
+    
     try {
-        const tempDir = path.join(tempBaseDir, requestId);
+        // Create temp directory
         if (!fs.existsSync(tempDir)) {
             fs.mkdirSync(tempDir, { recursive: true });
         }
         
+        // Setup WhatsApp socket
         const { state, saveCreds } = await useMultiFileAuthState(tempDir);
-        const logger = pino({ level: 'fatal' });
+        const logger = pino({ level: 'silent' });
         
-        // Create socket for pairing code
         const sock = makeWASocket({
             auth: {
                 creds: state.creds,
@@ -66,229 +83,320 @@ router.get('/', async (req, res) => {
             logger,
             browser: Browsers.macOS("Safari"),
             syncFullHistory: false,
+            connectTimeoutMs: 60000,
+            keepAliveIntervalMs: 10000
         });
         
+        // Store credentials
         sock.ev.on('creds.update', saveCreds);
         
-        // Request pairing code
-        if (!sock.authState.creds.registered) {
-            await delay(1000);
+        // Handle connection updates
+        sock.ev.on('connection.update', async (update) => {
+            const { connection, lastDisconnect, qr } = update;
             
-            try {
-                const pairingCode = await sock.requestPairingCode(phoneNumber);
-                console.log(`✅ [${requestId}] Pairing code generated: ${pairingCode}`);
+            console.log(`[${sessionId}] Connection update:`, connection);
+            
+            if (connection === 'open') {
+                console.log(`✅ [${sessionId}] WhatsApp connected!`);
                 
-                // Store session info
-                activeSessions.set(requestId, {
+                try {
+                    // Wait a moment for connection to stabilize
+                    await delay(2000);
+                    
+                    // Get user info
+                    const user = sock.user;
+                    if (!user) {
+                        throw new Error('User information not available');
+                    }
+                    
+                    console.log(`[${sessionId}] Connected as: ${user.id}`);
+                    
+                    // Read session files
+                    const sessionFiles = fs.readdirSync(tempDir);
+                    let sessionData = {};
+                    
+                    for (const file of sessionFiles) {
+                        if (file.endsWith('.json')) {
+                            try {
+                                const filePath = path.join(tempDir, file);
+                                const content = fs.readFileSync(filePath, 'utf8');
+                                sessionData[file] = content;
+                            } catch (fileErr) {
+                                console.error(`[${sessionId}] Error reading ${file}:`, fileErr.message);
+                            }
+                        }
+                    }
+                    
+                    // Create session string
+                    const sessionString = JSON.stringify(sessionData);
+                    const sessionCode = Buffer.from(sessionString).toString('base64');
+                    
+                    console.log(`[${sessionId}] Session data prepared (${sessionCode.length} chars)`);
+                    
+                    // Send session ID to user
+                    const message = {
+                        text: `🔐 *DTZ NOVA XMD - Session Created*\n\n` +
+                              `*📱 Your Session ID:*\n\`\`\`${sessionCode}\`\`\`\n\n` +
+                              `*⚠️ IMPORTANT:*\n` +
+                              `• Save this session ID safely\n` +
+                              `• Never share it with anyone\n` +
+                              `• Use it to restore your session\n\n` +
+                              `_Generated: ${new Date().toLocaleString()}_\n` +
+                              `_Session ID: ${sessionId}_`
+                    };
+                    
+                    await sock.sendMessage(user.id, message);
+                    console.log(`📨 [${sessionId}] Session ID sent to ${user.id}`);
+                    
+                    // Send welcome message
+                    const welcomeMsg = {
+                        text: `🎉 *Welcome to DTZ NOVA XMD!*\n\n` +
+                              `✅ Your WhatsApp is now connected to the bot.\n\n` +
+                              `*Features:*\n` +
+                              `• Multi-functional bot\n` +
+                              `• Web pairing system\n` +
+                              `• Session management\n\n` +
+                              `🔗 *Links:*\n` +
+                              `• GitHub: https://github.com/alpha-x-team-ofc\n` +
+                              `• Support: Contact the developer\n\n` +
+                              `_Powered by ▶ ●───ᴅᴛᴢ ɴᴏᴠᴀ xᴍᴅ────▶ ●_`
+                    };
+                    
+                    await sock.sendMessage(user.id, welcomeMsg);
+                    
+                    // Save session info
+                    const sessionInfo = {
+                        sessionId,
+                        phoneNumber: user.id,
+                        timestamp: new Date().toISOString(),
+                        sessionCode: sessionCode.substring(0, 100) + '...'
+                    };
+                    
+                    fs.writeFileSync(
+                        path.join(tempDir, 'info.json'),
+                        JSON.stringify(sessionInfo, null, 2)
+                    );
+                    
+                } catch (error) {
+                    console.error(`[${sessionId}] Error in connection handler:`, error.message);
+                } finally {
+                    // Close connection after 5 seconds
+                    setTimeout(async () => {
+                        console.log(`[${sessionId}] Closing connection...`);
+                        try {
+                            if (sock.ws && sock.ws.readyState === 1) {
+                                sock.ws.close();
+                            }
+                        } catch (closeErr) {
+                            console.error(`[${sessionId}] Error closing:`, closeErr.message);
+                        }
+                    }, 5000);
+                }
+            }
+            
+            if (connection === 'close') {
+                console.log(`[${sessionId}] Connection closed`);
+                const error = lastDisconnect?.error;
+                if (error) {
+                    console.log(`[${sessionId}] Disconnect error:`, error.output?.statusCode || error.message);
+                }
+                
+                // Cleanup after 10 seconds
+                setTimeout(() => {
+                    if (activeSessions.has(sessionId)) {
+                        removeFolder(tempDir);
+                        activeSessions.delete(sessionId);
+                        console.log(`[${sessionId}] Cleaned up`);
+                    }
+                }, 10000);
+            }
+            
+            if (qr) {
+                console.log(`[${sessionId}] QR generated (pairing mode active)`);
+            }
+        });
+        
+        // Request pairing code
+        console.log(`[${sessionId}] Requesting pairing code for: ${phoneNumber}`);
+        
+        try {
+            // Use a different approach for pairing code
+            let pairingCode;
+            
+            // Try with 6-digit pairing code
+            if (!sock.authState.creds.registered) {
+                // First, try to register
+                await delay(1000);
+                
+                // Get pairing code from WhatsApp
+                pairingCode = await sock.requestPairingCode(phoneNumber.trim());
+                
+                console.log(`✅ [${sessionId}] Pairing code generated: ${pairingCode}`);
+                
+                // Store in active sessions
+                activeSessions.set(sessionId, {
+                    sock,
                     tempDir,
                     phoneNumber,
-                    sock,
                     pairingCode,
                     timestamp: Date.now()
                 });
                 
-                // Setup auto-cleanup after 10 minutes
+                // Auto cleanup after 5 minutes
                 setTimeout(() => {
-                    const session = activeSessions.get(requestId);
-                    if (session) {
-                        console.log(`⏰ [${requestId}] Auto-cleaning session`);
-                        session.sock.ws?.close();
-                        removeFolder(session.tempDir);
-                        activeSessions.delete(requestId);
+                    if (activeSessions.has(sessionId)) {
+                        console.log(`[${sessionId}] Session expired`);
+                        sock.ws?.close();
+                        removeFolder(tempDir);
+                        activeSessions.delete(sessionId);
                     }
-                }, 10 * 60 * 1000);
+                }, 5 * 60 * 1000);
                 
-                // Setup connection handler for sending session ID
-                setupConnectionHandler(sock, tempDir, phoneNumber, requestId);
-                
-                return res.json({ 
+                // Return the pairing code to user
+                return res.json({
+                    success: true,
                     code: pairingCode,
-                    message: "Use this code in WhatsApp > Linked Devices > Link a Device",
-                    sessionId: requestId
+                    sessionId: sessionId,
+                    message: `Pairing code: ${pairingCode}`,
+                    instructions: "Open WhatsApp → Settings → Linked Devices → Link a Device → Enter this code"
                 });
-                
-            } catch (pairErr) {
-                console.error(`❌ [${requestId}] Pairing error:`, pairErr.message);
-                removeFolder(tempDir);
-                return res.status(500).json({ 
-                    error: "Failed to generate pairing code",
-                    details: pairErr.message 
+            } else {
+                return res.status(400).json({
+                    error: "Already registered",
+                    message: "This number is already registered. Please use logout command first."
                 });
             }
-        } else {
-            removeFolder(tempDir);
-            return res.status(400).json({ 
-                error: "Already registered. Please use a new number or clear session." 
-            });
+            
+        } catch (pairError) {
+            console.error(`❌ [${sessionId}] Pairing error:`, pairError.message);
+            
+            // Try alternative method
+            try {
+                // Close existing socket
+                if (sock.ws) sock.ws.close();
+                
+                // Remove temp directory
+                removeFolder(tempDir);
+                
+                // Create new directory
+                const newTempDir = path.join(tempBaseDir, sessionId + '_retry');
+                if (!fs.existsSync(newTempDir)) {
+                    fs.mkdirSync(newTempDir, { recursive: true });
+                }
+                
+                const { state: state2, saveCreds: saveCreds2 } = await useMultiFileAuthState(newTempDir);
+                
+                const sock2 = makeWASocket({
+                    auth: {
+                        creds: state2.creds,
+                        keys: makeCacheableSignalKeyStore(state2.keys, logger)
+                    },
+                    printQRInTerminal: false,
+                    logger,
+                    browser: Browsers.macOS("Safari"),
+                    syncFullHistory: false,
+                });
+                
+                sock2.ev.on('creds.update', saveCreds2);
+                
+                if (!sock2.authState.creds.registered) {
+                    await delay(1500);
+                    const pairingCode2 = await sock2.requestPairingCode(phoneNumber.trim());
+                    
+                    console.log(`✅ [${sessionId}] Retry successful. Pairing code: ${pairingCode2}`);
+                    
+                    activeSessions.set(sessionId, {
+                        sock: sock2,
+                        tempDir: newTempDir,
+                        phoneNumber,
+                        pairingCode: pairingCode2,
+                        timestamp: Date.now()
+                    });
+                    
+                    return res.json({
+                        success: true,
+                        code: pairingCode2,
+                        sessionId: sessionId,
+                        message: `Pairing code: ${pairingCode2}`
+                    });
+                }
+                
+            } catch (retryError) {
+                console.error(`❌ [${sessionId}] Retry also failed:`, retryError.message);
+                
+                // Cleanup
+                const session = activeSessions.get(sessionId);
+                if (session) {
+                    session.sock.ws?.close();
+                    removeFolder(session.tempDir);
+                    activeSessions.delete(sessionId);
+                }
+                
+                return res.status(500).json({
+                    error: "Failed to generate pairing code",
+                    details: retryError.message,
+                    solution: "Please try again or check if the number is valid"
+                });
+            }
         }
         
-    } catch (err) {
-        console.error(`🚨 [${requestId}] Setup error:`, err.message);
-        return res.status(500).json({ 
-            error: "Server error during setup",
-            details: err.message 
+    } catch (error) {
+        console.error(`🚨 [${sessionId}] Fatal error:`, error.message);
+        
+        // Cleanup
+        removeFolder(tempDir);
+        activeSessions.delete(sessionId);
+        
+        return res.status(500).json({
+            error: "Internal server error",
+            details: error.message
         });
     }
 });
 
-// Function to setup connection handler for sending session ID
-function setupConnectionHandler(sock, tempDir, phoneNumber, requestId) {
-    sock.ev.on("connection.update", async (update) => {
-        const { connection, lastDisconnect } = update;
-        
-        if (connection === "open") {
-            console.log(`✅ [${requestId}] Connected to WhatsApp`);
-            
-            try {
-                await delay(3000); // Wait for full connection
-                
-                // Get user info
-                const user = sock.user;
-                if (!user) {
-                    throw new Error("User not found in connection");
-                }
-                
-                // Read session files
-                const sessionFiles = fs.readdirSync(tempDir);
-                const sessionData = {};
-                
-                for (const file of sessionFiles) {
-                    if (file.endsWith('.json')) {
-                        const filePath = path.join(tempDir, file);
-                        try {
-                            const content = fs.readFileSync(filePath, 'utf8');
-                            sessionData[file] = JSON.parse(content);
-                        } catch (fileErr) {
-                            console.error(`📁 [${requestId}] File read error ${file}:`, fileErr.message);
-                        }
-                    }
-                }
-                
-                // Create session ID
-                const base64Session = Buffer.from(JSON.stringify(sessionData)).toString('base64');
-                const sessionId = `DTZ_NOVA_XMD_${requestId}_${base64Session.substring(0, 50)}`;
-                
-                console.log(`📤 [${requestId}] Session ID created`);
-                
-                // Send session ID to user
-                await sock.sendMessage(user.id, {
-                    text: `🔐 *DTZ NOVA XMD - Session Created*\n\n` +
-                          `✅ *Your Session ID:*\n\`\`\`${sessionId}\`\`\`\n\n` +
-                          `📱 *Save this ID* for future use\n` +
-                          `⚠️ *Never share* this with anyone\n` +
-                          `🔄 Use it to restore your session\n\n` +
-                          `_Generated at: ${new Date().toLocaleString()}_`
-                });
-                
-                console.log(`📨 [${requestId}] Session ID sent to ${user.id}`);
-                
-                // Send success message
-                await sock.sendMessage(user.id, {
-                    text: `🚀 *Connection Successful!*\n\n` +
-                          `▸ Your WhatsApp is now connected to DTZ NOVA XMD\n` +
-                          `▸ Session is active and ready to use\n` +
-                          `▸ Check your messages for the Session ID\n\n` +
-                          `🔗 *Useful Links:*\n` +
-                          `▸ GitHub: https://github.com/alpha-x-team-ofc\n` +
-                          `▸ Support: Contact Developer\n\n` +
-                          `_Powered by ▶ ●───ᴅᴛᴢ ɴᴏᴠᴀ xᴍᴅ────▶ ●_`
-                });
-                
-                // Save session info to file
-                const sessionInfo = {
-                    sessionId,
-                    phoneNumber: user.id,
-                    timestamp: new Date().toISOString(),
-                    requestId
-                };
-                
-                const infoPath = path.join(tempDir, 'session-info.json');
-                fs.writeFileSync(infoPath, JSON.stringify(sessionInfo, null, 2));
-                
-            } catch (sendErr) {
-                console.error(`❌ [${requestId}] Error sending session:`, sendErr.message);
-                
-                try {
-                    await sock.sendMessage(sock.user?.id, {
-                        text: `⚠️ *Error Creating Session*\n\n` +
-                              `Error: ${sendErr.message}\n\n` +
-                              `Please try again or contact support.`
-                    });
-                } catch (msgErr) {
-                    console.error(`💬 [${requestId}] Could not send error message:`, msgErr.message);
-                }
-                
-            } finally {
-                // Cleanup after sending
-                setTimeout(async () => {
-                    console.log(`🔒 [${requestId}] Closing connection...`);
-                    try {
-                        sock.ws?.close();
-                    } catch (closeErr) {
-                        console.error(`❌ [${requestId}] Close error:`, closeErr.message);
-                    }
-                    
-                    // Delay cleanup to ensure everything is sent
-                    setTimeout(() => {
-                        removeFolder(tempDir);
-                        activeSessions.delete(requestId);
-                        console.log(`🗑️ [${requestId}] Session cleaned up`);
-                    }, 5000);
-                }, 5000);
-            }
-            
-        } else if (connection === "close") {
-            console.log(`🔌 [${requestId}] Connection closed`);
-            const session = activeSessions.get(requestId);
-            
-            // Only cleanup if not already cleaned
-            if (session && Date.now() - session.timestamp < 9 * 60 * 1000) {
-                removeFolder(session.tempDir);
-                activeSessions.delete(requestId);
-            }
-        }
-    });
-}
-
-// Session status endpoint
-router.get('/status/:id', (req, res) => {
+// Additional endpoint to check session status
+router.get('/check/:id', (req, res) => {
     const sessionId = req.params.id;
     const session = activeSessions.get(sessionId);
     
     if (session) {
-        const age = Date.now() - session.timestamp;
-        const files = fs.existsSync(session.tempDir) 
-            ? fs.readdirSync(session.tempDir) 
-            : [];
+        const isConnected = session.sock && session.sock.user;
+        const files = fs.existsSync(session.tempDir) ? fs.readdirSync(session.tempDir) : [];
         
         res.json({
             status: 'active',
-            age: `${Math.floor(age / 1000)}s`,
+            connected: isConnected,
             phoneNumber: session.phoneNumber,
-            filesCount: files.length,
-            pairingCode: session.pairingCode
+            pairingCode: session.pairingCode,
+            files: files.length,
+            age: Math.floor((Date.now() - session.timestamp) / 1000) + 's'
         });
     } else {
-        res.status(404).json({ status: 'not_found' });
+        res.json({
+            status: 'expired',
+            message: 'Session not found or expired'
+        });
     }
 });
 
-// Cleanup all sessions endpoint (admin)
+// Cleanup endpoint
 router.get('/cleanup', (req, res) => {
-    const count = activeSessions.size;
+    const cleaned = [];
     const now = Date.now();
     
     for (const [id, session] of activeSessions.entries()) {
-        if (now - session.timestamp > 10 * 60 * 1000) {
+        if (now - session.timestamp > 10 * 60 * 1000) { // 10 minutes
             session.sock.ws?.close();
             removeFolder(session.tempDir);
             activeSessions.delete(id);
+            cleaned.push(id);
         }
     }
     
-    res.json({ 
-        message: `Cleaned up sessions. Active: ${activeSessions.size}`,
-        cleaned: count - activeSessions.size
+    res.json({
+        cleaned: cleaned.length,
+        active: activeSessions.size,
+        cleanedIds: cleaned
     });
 });
 
