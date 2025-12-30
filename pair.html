@@ -1,484 +1,227 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>▶ ●───ᴅᴛᴢ ɴᴏᴠᴀ xᴍᴅ────▶ ●</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PAIR CODE</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #141414;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: cover;
+      font-family: 'Arial', sans-serif;
+      color: #fff; /* Set the text color to white */
+    }
 
-<style>
-* { box-sizing: border-box; }
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
-body {
-  margin: 0;
-  font-family: 'Segoe UI', sans-serif;
-  color: #fff;
-  min-height: 100vh;
-  background:
-    linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
-    url("https://files.catbox.moe/oec33n.png") center / cover no-repeat fixed;
-  overflow-x: hidden;
-}
+    .box {
+      width: 300px;
+      height: 330px;
+      padding: 20px;
+      position: relative;
+      text-align: center;
+      background-color: #a20000; /* Update background color */
+      border-radius: 10px;
+      transform: perspective(1000px) rotateY(0deg);
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+      position: relative;
+    }
 
+    #text {
+      color: #ffffff; /* Set the text color to black (#000) */
+    }
 
-/* ❄️ Snow container */
-.snow {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 999;
-}
+    .input-container input {
+      color: #ffffff; /* Set the text color to black (#000) */
+    }
 
-/* ❄️ Snow flakes */
-.snow span {
-  position: absolute;
-  top: -10px;
-  width: 6px;
-  height: 6px;
-  background: white;
-  border-radius: 50%;
-  opacity: 0.8;
-  animation: fall linear infinite;
-}
+    .centered-text {
+      color: #ffffff; /* Set the text color to black (#000) */
+    }
 
-@keyframes fall {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(110vh); }
-}
+    .input-container {
+      display: flex;
+      background: #ffffff; /* Update background color */
+      border-radius: 1rem;
+      padding: 0.3rem;
+      gap: 0.3rem;
+      max-width: 300px;
+      width: 100%;
+    }
 
-/* 🔥 Main content */
-.container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 40px 15px;
-  min-height: 100vh;
-  text-align: center;
-}
+    .input-container input {
+      border-radius: 0.8rem 0 0 0.8rem;
+      background: #000000; /* Update background color */
+      width: 89%;
+      flex-basis: 75%;
+      padding: 1rem;
+      border: none;
+      border-left: 2px solid #075e54; /* Update border color */
+      color: #ecf0f1; /* Set text color to light grey */
+      transition: all 0.2s ease-in-out;
+    }
 
-h1 {
-  color: #ff2d2d;
-  font-size: 30px;
-  text-shadow: 0 0 20px rgba(255,45,45,0.8);
-  margin-bottom: 5px;
-}
+    .input-container input:focus {
+      border-left: 2px solid #075e54;
+      outline: none;
+      box-shadow: inset 13px 13px 10px #075e54, inset -13px -13px 10px #2c3e50;
+    }
 
-.subtitle {
-  margin-bottom: 25px;
-  font-size: 14px;
-  opacity: 0.85;
-}
+    .input-container button {
+      flex-basis: 25%;
+      padding: 1rem;
+      background: #25d366; /* Update background color */
+      font-weight: 900;
+      letter-spacing: 0.3rem;
+      text-transform: uppercase;
+      color: white;
+      border: none;
+      width: 100%;
+      border-radius: 0 1rem 1rem 0;
+      transition: all 0.2s ease-in-out;
+    }
 
-/* Card styles */
-.card {
-  background: rgba(0,0,0,0.65);
-  border: 1px solid rgba(255,0,0,0.4);
-  border-radius: 16px;
-  padding: 25px;
-  width: 100%;
-  max-width: 420px;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 0 25px rgba(255,0,0,0.3);
-  margin-bottom: 20px;
-}
+    .input-container button:hover {
+      background: #2980b9; /* Update background color on hover */
+    }
 
-/* Details panels */
-.details-panel {
-  background: rgba(0,0,0,0.7);
-  border: 1px solid rgba(0, 140, 255, 0.4);
-  border-radius: 12px;
-  padding: 20px;
-  width: 100%;
-  max-width: 420px;
-  backdrop-filter: blur(5px);
-  box-shadow: 0 0 15px rgba(0, 140, 255, 0.2);
-  margin-bottom: 15px;
-  text-align: left;
-}
+    #waiting-message {
+      color: #ffffff; /* Set text color to light grey */
+      margin-top: 10px;
+    }
 
-.details-panel h3 {
-  color: #2daaff;
-  margin-top: 0;
-  margin-bottom: 15px;
-  font-size: 18px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.details-panel h3::before {
-  content: "▶";
-  color: #ff2d2d;
-}
-
-.details-row {
-  display: flex;
-  margin-bottom: 10px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
-}
-
-.details-label {
-  width: 120px;
-  color: #aaa;
-  font-size: 14px;
-}
-
-.details-value {
-  flex: 1;
-  color: #fff;
-  font-size: 14px;
-}
-
-.details-value.highlight {
-  color: #ff6a00;
-  font-weight: bold;
-}
-
-/* Status indicators */
-.status-indicator {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  margin-right: 8px;
-}
-
-.status-online {
-  background-color: #00ff00;
-  box-shadow: 0 0 8px #00ff00;
-}
-
-.status-offline {
-  background-color: #ff0000;
-  box-shadow: 0 0 8px #ff0000;
-}
-
-.status-loading {
-  background-color: #ffff00;
-  box-shadow: 0 0 8px #ffff00;
-  animation: pulse 1.5s infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
-}
-
-input {
-  width: 100%;
-  padding: 14px;
-  margin-bottom: 15px;
-  border-radius: 10px;
-  border: none;
-  outline: none;
-  background: #111;
-  color: #fff;
-  font-size: 16px;
-  border: 1px solid transparent;
-  transition: border 0.3s;
-}
-
-input:focus {
-  border: 1px solid #ff2d2d;
-}
-
-button {
-  width: 100%;
-  padding: 14px;
-  border-radius: 10px;
-  border: none;
-  background: linear-gradient(135deg, #ff2d2d, #ff6a00);
-  color: #000;
-  font-weight: bold;
-  font-size: 17px;
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-button:hover {
-  box-shadow: 0 0 20px rgba(255,100,0,0.7);
-  transform: translateY(-2px);
-}
-
-.output {
-  display: none;
-  margin-top: 15px;
-  background: #0b0b0b;
-  padding: 12px;
-  border-radius: 10px;
-  border: 1px solid #333;
-  word-break: break-all;
-  font-family: monospace;
-}
-
-/* ⏰ Time box */
-.time-box {
-  margin-top: 20px;
-  font-size: 14px;
-  opacity: 0.9;
-  background: rgba(0,0,0,0.5);
-  padding: 10px 15px;
-  border-radius: 10px;
-}
-
-/* Footer */
-footer {
-  margin-top: 25px;
-  font-size: 12px;
-  opacity: 0.75;
-  text-align: center;
-  max-width: 420px;
-}
-
-footer span {
-  color: #ff4d4d;
-}
-
-/* Responsive adjustments */
-@media (max-width: 480px) {
-  .container {
-    padding: 20px 10px;
-  }
-  
-  h1 {
-    font-size: 24px;
-  }
-  
-  .card, .details-panel {
-    padding: 18px;
-  }
-  
-  .details-row {
-    flex-direction: column;
-  }
-  
-  .details-label {
-    width: 100%;
-    margin-bottom: 5px;
-  }
-}
-</style>
-</head>
-
-<body>
-
-<!-- ❄️ Snow -->
-<div class="snow" id="snow"></div>
-
-<div class="container">
-
-  <h1>▶ ●───ᴅᴛᴢ ɴᴏᴠᴀ xᴍᴅ────▶ ●</h1>
-  <div class="subtitle">DTZ NOVA XMD – WhatsApp Web Pairing System</div>
-
-  <!-- Pairing Card -->
-  <div class="card">
-    <input type="text" id="number" placeholder="Enter WhatsApp Number (e.g. 947XXXXXXXX)">
-    <button onclick="getCode()">Generate Pair Code</button>
-    <div id="result" class="output"></div>
-  </div>
-
-  <!-- Developer Details -->
-  <div class="details-panel">
-    <h3>👨‍💻 Developer Details</h3>
-    <div class="details-row">
-      <div class="details-label">Lead Developer:</div>
-      <div class="details-value highlight">Dulina</div>
-    </div>
-    <div class="details-row">
-      <div class="details-label">Role:</div>
-      <div class="details-value">System Architect & Security Lead</div>
-    </div>
-    <div class="details-row">
-      <div class="details-label">Experience:</div>
-      <div class="details-value">2+ years in messaging systems</div>
-    </div>
-    <div class="details-row">
-      <div class="details-label">Specialization:</div>
-      <div class="details-value">Real-time communication protocols</div>
-    </div>
-    <div class="details-row">
-      <div class="details-label">Contact:</div>
-      <div class="details-value">9475298237</div>
-    </div>
-  </div>
-
-  <!-- Server Details -->
-  <div class="details-panel">
-    <h3>🖥️ Server Status</h3>
-    <div class="details-row">
-      <div class="details-label">API Server:</div>
-      <div class="details-value">
-        <span class="status-indicator status-online"></span>
-        Online (api.dtz-nova.internal:8443)
-      </div>
-    </div>
-    <div class="details-row">
-      <div class="details-label">Database:</div>
-      <div class="details-value">
-        <span class="status-indicator status-online"></span>
-        MySQL 8.0 (replicated)
-      </div>
-    </div>
-    <div class="details-row">
-      <div class="details-label">Uptime:</div>
-      <div class="details-value">99.87% (30 days)</div>
-    </div>
-    <div class="details-row">
-      <div class="details-label">Response Time:</div>
-      <div class="details-value">~42ms avg</div>
-    </div>
-    <div class="details-row">
-      <div class="details-label">Version:</div>
-      <div class="details-value highlight">DTZ Nova XMD v2.4.1</div>
-    </div>
-    <div class="details-row">
-      <div class="details-label">Security Level:</div>
-      <div class="details-value">AES-256-GCM + TLS 1.3</div>
-    </div>
-  </div>
-
-  <!-- Team Details -->
-  <div class="details-panel">
-    <h3>⚡ Team Information</h3>
-    <div class="details-row">
-      <div class="details-label">Team Name:</div>
-      <div class="details-value highlight">DTZ TEAM</div>
-    </div>
-    <div class="details-row">
-      <div class="details-label">Members:</div>
-      <div class="details-value">101 active developers</div>
-    </div>
-    <div class="details-row">
-      <div class="details-label">Established:</div>
-      <div class="details-value">2023</div>
-    </div>
-    <div class="details-row">
-      <div class="details-label">Focus:</div>
-      <div class="details-value">Secure messaging solutions</div>
-    </div>
-    <div class="details-row">
-      <div class="details-label">Projects:</div>
-      <div class="details-value">Nova XMD, Phoenix Protocol, Sentinel Guard</div>
-    </div>
-  </div>
-
-  <div class="time-box" id="time"></div>
-
-  <footer>
-    <div>🔒 Secure Connection | TLS 1.3 Encrypted</div>
-    <div>👤 System Owner: <span>Dulina</span> | ⚡ Team: <span>DTZ TEAM</span></div>
-    <div style="margin-top: 8px; font-size: 11px; opacity: 0.6;">
-      © 2023 DTZ Nova XMD System. All operations logged for security.
-    </div>
-  </footer>
-
-</div>
-
-<script>
-/* ❄️ Snow generator */
-const snow = document.getElementById("snow");
-for (let i = 0; i < 60; i++) {
-  const flake = document.createElement("span");
-  flake.style.left = Math.random() * 100 + "vw";
-  flake.style.animationDuration = (3 + Math.random() * 7) + "s";
-  flake.style.opacity = Math.random();
-  flake.style.transform = `scale(${Math.random()})`;
-  snow.appendChild(flake);
-}
-
-/* ⏰ Time & Date */
-function updateTime() {
-  const now = new Date();
-  document.getElementById("time").innerHTML =
-    "🕒 Server Time: " + now.toLocaleTimeString() + " | 📅 " + now.toDateString();
-}
-setInterval(updateTime, 1000);
-updateTime();
-
-/* 🔗 Pair code fetch */
-async function getCode() {
-  const number = document.getElementById("number").value.trim();
-  const result = document.getElementById("result");
-
-  if (!number) {
-    alert("Please enter a valid WhatsApp number");
-    return;
-  }
-
-  // Validate number format (basic validation)
-  if (!/^[0-9]{10,15}$/.test(number.replace(/\D/g, ''))) {
-    alert("Please enter a valid phone number (10-15 digits)");
-    return;
-  }
-
-  result.style.display = "block";
-  result.textContent = "⏳ Generating pairing code... Establishing secure connection...";
-
-  try {
-    // Simulate API call with timeout
-    setTimeout(async () => {
-      try {
-        // In a real implementation, this would be an actual API call
-        // const res = await fetch(`/code?number=${encodeURIComponent(number)}`);
-        // const data = await res.json();
-        
-        // For demo purposes, simulate a response
-        const simulatedResponse = {
-          code: "XMD-" + Math.floor(100000 + Math.random() * 900000),
-          expires: "10 minutes",
-          timestamp: new Date().toISOString()
-        };
-        
-        result.innerHTML = `
-          ✅ <strong>Pairing Code Generated Successfully</strong><br><br>
-          📱 <strong>Number:</strong> ${number}<br>
-          🔑 <strong>Code:</strong> ${simulatedResponse.code}<br>
-          ⏳ <strong>Expires:</strong> ${simulatedResponse.expires}<br>
-          📍 <strong>Generated at:</strong> ${new Date(simulatedResponse.timestamp).toLocaleTimeString()}<br><br>
-          <span style="color: #aaa; font-size: 12px;">
-            Use this code in the WhatsApp Web interface within ${simulatedResponse.expires}
-          </span>
-        `;
-        
-        // Log the generation (in a real system, this would be a secure log)
-        console.log(`Pairing code generated for ${number}: ${simulatedResponse.code}`);
-      } catch (e) {
-        result.textContent = "❌ Server error: Could not generate code";
+    @media (max-width: 500px) {
+      .input-container {
+        flex-direction: column;
       }
-    }, 1500); // Simulate network delay
-    
-  } catch (e) {
-    result.textContent = "❌ Network error: Failed to connect to DTZ Nova server";
-  }
-}
 
-// Add some interactive effects
-document.addEventListener('DOMContentLoaded', function() {
-  const inputs = document.querySelectorAll('input');
-  inputs.forEach(input => {
-    input.addEventListener('focus', function() {
-      this.style.boxShadow = '0 0 10px rgba(255, 45, 45, 0.5)';
-    });
-    
-    input.addEventListener('blur', function() {
-      this.style.boxShadow = 'none';
-    });
-  });
-  
-  // Simulate server status update
-  setInterval(() => {
-    const serverStatus = document.querySelector('.details-panel:nth-child(4) .details-row:first-child .details-value');
-    // Just for visual effect - in a real app this would come from an API
-    const indicator = serverStatus.querySelector('.status-indicator');
-    indicator.classList.remove('status-loading');
-    indicator.classList.add('status-online');
-  }, 5000);
-});
-</script>
+      .input-container input {
+        border-radius: 0.8rem;
+      }
 
+      .input-container button {
+        padding: 1rem;
+        border-radius: 0.8rem;
+      }
+    }
+
+    .centered-text {
+      text-align: center;
+    }
+
+    /* Add styles for the loading spinner */
+    #loading-spinner {
+      display: none;
+      color: white;
+      margin-top: 10px;
+    }
+
+    .fa-spinner {
+      animation: spin 2s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="main">
+      <div class="box" id="box">
+        <div id="text">
+          <i class="fa fa-user"></i>
+          <p>
+            <h3 class="centered-text">Link Robin with phone number</h3>
+            <br>
+            <h6>🔢 Enter your number with country code. ROBIN WEB PAIR</h6>
+            <div class="input-container">
+              <input placeholder="+94704xxxxxx" type="number" id="number" placeholder="❗ Enter your phone number with country code, ROBIN WEB PAIR" name="">
+              <button id="submit">Submit ROBIN</button>
+            </div>
+            <!-- Add the loading spinner -->
+            <div id="loading-spinner">
+              <i class="fas fa-spinner fa-spin"></i>
+            </div>
+            <br>
+            <br>
+            <main id="pair"></main>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script
+  src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.0.0-alpha.1/axios.min.js"
+  ></script>
+  <script>
+    
+    let a = document.getElementById("pair");
+    let b = document.getElementById("submit");
+    let c = document.getElementById("number");
+    let box = document.getElementById("box");
+
+    async function Copy() {
+      let text = document.getElementById("copy").innerText;
+      let obj = document.getElementById("copy");
+      await navigator.clipboard.writeText(obj.innerText.replace('CODE: ', ''));
+      obj.innerText = "✔️ COPIED";
+      obj.style = "color:blue;font-weight:bold";
+      obj.size = "5";
+      setTimeout(() => {
+        obj.innerText = text;
+        obj.style = "color:white;font-weight-bold";
+        obj.size = "5";
+      }, 500);
+    }
+
+    b.addEventListener("click", async (e) => {
+      e.preventDefault();
+      if (!c.value) {
+        a.innerHTML = '<a style="color:black;font-weight:bold">❗Enter your whatsapp number with country code.</a><br><br>';
+      } else if (c.value.replace(/[^0-9]/g, "").length < 11) {
+        a.innerHTML = '<a style="color:black;font-weight:bold">❗Invalid number format. Please try again.</a><br><br>';
+      } else {
+        const bc = c.value.replace(/[^0-9]/g, "");
+        let bb = "";
+        let bbc = "";
+        const cc = bc.split('');
+        cc.map(a => {
+          bbc += a;
+          if (bbc.length == 3) {
+            bb += " " + a;
+          } else if (bbc.length == 8) {
+            bb += " " + a;
+          } else {
+            bb += a;
+          }
+        });
+        c.type = "text";
+        c.value = "+" + bb;
+        c.style = "color:white;font-size:20px";
+        // Show the loading spinner
+        document.getElementById("loading-spinner").style.display = "block";
+        a.innerHTML = ''; // Clear the previous content
+        let { data } = await axios(`/code?number=${bc}`);
+        let code = data.code || "❗ Service Unavailable";
+        a.innerHTML = '<font id="copy" onclick="Copy()" style="color:blue;font-weight:bold" size="5">CODE: <span style="color:black;font-weight:bold">' + code + '</span></font><br><br><br>';
+        // Hide the loading spinner when the process is complete
+        document.getElementById("loading-spinner").style.display = "none";
+      }
+    });
+  </script>
 </body>
 </html>
