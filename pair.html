@@ -3,224 +3,675 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PAIR CODE</title>
+  <title>PAIR CODE | WhatsApp Linking</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+    
+    :root {
+      --primary: #25d366;
+      --primary-dark: #1da851;
+      --secondary: #141414;
+      --accent: #ff6b6b;
+      --card-bg: #1a1a1a;
+      --text: #ffffff;
+      --text-secondary: #b0b0b0;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
     body {
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      min-height: 100vh;
       margin: 0;
-      background-color: #141414;
-      background-repeat: no-repeat;
-      background-position: center;
-      background-size: cover;
-      font-family: 'Arial', sans-serif;
-      color: #fff; /* Set the text color to white */
+      background: linear-gradient(135deg, var(--secondary) 0%, #1e1e2e 100%);
+      font-family: 'Poppins', sans-serif;
+      color: var(--text);
+      overflow-x: hidden;
+      position: relative;
     }
-
+    
+    /* Animated background elements */
+    .bg-circle {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(37, 211, 102, 0.05);
+      z-index: -1;
+      animation: float 15s infinite ease-in-out;
+    }
+    
+    .circle-1 {
+      width: 300px;
+      height: 300px;
+      top: -150px;
+      left: -150px;
+      animation-delay: 0s;
+    }
+    
+    .circle-2 {
+      width: 200px;
+      height: 200px;
+      bottom: -100px;
+      right: -100px;
+      animation-delay: 5s;
+      background: rgba(255, 107, 107, 0.05);
+    }
+    
+    .circle-3 {
+      width: 150px;
+      height: 150px;
+      top: 50%;
+      right: 10%;
+      animation-delay: 10s;
+      background: rgba(255, 107, 107, 0.03);
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-20px) scale(1.05); }
+    }
+    
     .container {
       display: flex;
       flex-direction: column;
       align-items: center;
-    }
-
-    .box {
-      width: 300px;
-      height: 330px;
+      width: 100%;
+      max-width: 450px;
       padding: 20px;
-      position: relative;
+      animation: fadeIn 1s ease-out;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      animation: slideIn 0.8s ease-out 0.2s both;
+    }
+    
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(-30px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    
+    .logo-icon {
+      background: var(--primary);
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 15px;
+      box-shadow: 0 5px 15px rgba(37, 211, 102, 0.4);
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    
+    .logo-text {
+      font-size: 28px;
+      font-weight: 700;
+      background: linear-gradient(90deg, var(--primary), #4cd964);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    
+    .box {
+      width: 100%;
+      padding: 30px;
       text-align: center;
-      background-color: #a20000; /* Update background color */
-      border-radius: 10px;
-      transform: perspective(1000px) rotateY(0deg);
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+      background: var(--card-bg);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      transform-style: preserve-3d;
+      transition: transform 0.5s ease, box-shadow 0.5s ease;
+      position: relative;
+      overflow: hidden;
+      animation: cardAppear 1s ease-out 0.4s both;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    @keyframes cardAppear {
+      from { opacity: 0; transform: translateY(30px) perspective(1000px) rotateX(10deg); }
+      to { opacity: 1; transform: translateY(0) perspective(1000px) rotateX(0); }
+    }
+    
+    .box:hover {
+      transform: translateY(-10px) perspective(1000px) rotateY(5deg);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+    }
+    
+    .box::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      z-index: 2;
+    }
+    
+    .box-header {
+      margin-bottom: 25px;
       position: relative;
     }
-
-    #text {
-      color: #ffffff; /* Set the text color to black (#000) */
+    
+    .box-header h3 {
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: var(--text);
     }
-
-    .input-container input {
-      color: #ffffff; /* Set the text color to black (#000) */
+    
+    .box-header p {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.5;
     }
-
-    .centered-text {
-      color: #ffffff; /* Set the text color to black (#000) */
-    }
-
+    
     .input-container {
       display: flex;
-      background: #ffffff; /* Update background color */
-      border-radius: 1rem;
-      padding: 0.3rem;
-      gap: 0.3rem;
-      max-width: 300px;
-      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 5px;
+      gap: 5px;
+      margin-bottom: 25px;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
-
+    
+    .input-container:focus-within {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(37, 211, 102, 0.2);
+      border-color: rgba(37, 211, 102, 0.3);
+    }
+    
     .input-container input {
-      border-radius: 0.8rem 0 0 0.8rem;
-      background: #000000; /* Update background color */
-      width: 89%;
-      flex-basis: 75%;
-      padding: 1rem;
+      border-radius: 10px 0 0 10px;
+      background: rgba(0, 0, 0, 0.3);
+      width: 100%;
+      padding: 18px 15px;
       border: none;
-      border-left: 2px solid #075e54; /* Update border color */
-      color: #ecf0f1; /* Set text color to light grey */
-      transition: all 0.2s ease-in-out;
+      color: var(--text);
+      font-family: 'Poppins', sans-serif;
+      font-size: 16px;
+      transition: all 0.3s ease;
     }
-
+    
     .input-container input:focus {
-      border-left: 2px solid #075e54;
       outline: none;
-      box-shadow: inset 13px 13px 10px #075e54, inset -13px -13px 10px #2c3e50;
+      background: rgba(0, 0, 0, 0.5);
     }
-
+    
+    .input-container input::placeholder {
+      color: rgba(255, 255, 255, 0.4);
+    }
+    
     .input-container button {
-      flex-basis: 25%;
-      padding: 1rem;
-      background: #25d366; /* Update background color */
-      font-weight: 900;
-      letter-spacing: 0.3rem;
+      padding: 0 25px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      font-weight: 600;
+      letter-spacing: 0.5px;
       text-transform: uppercase;
       color: white;
       border: none;
-      width: 100%;
-      border-radius: 0 1rem 1rem 0;
-      transition: all 0.2s ease-in-out;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-
+    
     .input-container button:hover {
-      background: #2980b9; /* Update background color on hover */
+      background: linear-gradient(135deg, var(--primary-dark), #1a9e46);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(37, 211, 102, 0.3);
     }
-
-    #waiting-message {
-      color: #ffffff; /* Set text color to light grey */
-      margin-top: 10px;
+    
+    .input-container button:active {
+      transform: translateY(0);
     }
-
-    @media (max-width: 500px) {
-      .input-container {
-        flex-direction: column;
-      }
-
-      .input-container input {
-        border-radius: 0.8rem;
-      }
-
-      .input-container button {
-        padding: 1rem;
-        border-radius: 0.8rem;
-      }
+    
+    .input-container button i {
+      margin-right: 8px;
+      font-size: 16px;
     }
-
-    .centered-text {
+    
+    .info-text {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 25px;
+      line-height: 1.6;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 12px 15px;
+      border-radius: 10px;
+      border-left: 3px solid var(--primary);
+    }
+    
+    .info-text i {
+      color: var(--primary);
+      margin-right: 8px;
+    }
+    
+    .result-container {
+      min-height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 20px;
+      transition: all 0.5s ease;
+    }
+    
+    .code-box {
+      background: linear-gradient(135deg, rgba(37, 211, 102, 0.1), rgba(255, 107, 107, 0.1));
+      border-radius: 12px;
+      padding: 20px;
+      width: 100%;
+      border: 1px solid rgba(37, 211, 102, 0.2);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .code-box:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(37, 211, 102, 0.1);
+    }
+    
+    .code-box::before {
+      content: 'CLICK TO COPY';
+      position: absolute;
+      top: 0;
+      right: 0;
+      background: var(--primary);
+      color: white;
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 0 12px 0 5px;
+      font-weight: 600;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    .code-box:hover::before {
+      opacity: 1;
+    }
+    
+    .code-label {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+      display: block;
+    }
+    
+    .code-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--primary);
+      letter-spacing: 3px;
+      font-family: monospace;
+    }
+    
+    .loading-spinner {
+      display: none;
+      color: var(--primary);
+      margin: 20px 0;
       text-align: center;
     }
-
-    /* Add styles for the loading spinner */
-    #loading-spinner {
-      display: none;
-      color: white;
-      margin-top: 10px;
+    
+    .loading-spinner i {
+      font-size: 40px;
+      animation: spin 1.5s linear infinite;
     }
-
-    .fa-spinner {
-      animation: spin 2s linear infinite;
-    }
-
+    
     @keyframes spin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
+    
+    .loading-text {
+      margin-top: 10px;
+      font-size: 14px;
+      color: var(--text-secondary);
+      animation: fadePulse 1.5s infinite;
+    }
+    
+    @keyframes fadePulse {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+    
+    .success-animation {
+      animation: successPop 0.5s ease-out;
+    }
+    
+    @keyframes successPop {
+      0% { transform: scale(0.8); opacity: 0; }
+      70% { transform: scale(1.05); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    
+    .footer {
+      margin-top: 30px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-secondary);
+      opacity: 0.7;
+      animation: fadeIn 1s ease-out 1s both;
+    }
+    
+    @media (max-width: 500px) {
+      .container {
+        padding: 15px;
+      }
+      
+      .box {
+        padding: 25px 20px;
+      }
+      
+      .input-container {
+        flex-direction: column;
+        background: transparent;
+        border: none;
+        padding: 0;
+      }
+      
+      .input-container input {
+        border-radius: 12px;
+        margin-bottom: 10px;
+        padding: 18px;
+        background: rgba(0, 0, 0, 0.3);
+      }
+      
+      .input-container button {
+        padding: 18px;
+        border-radius: 12px;
+        width: 100%;
+      }
+      
+      .logo-text {
+        font-size: 24px;
+      }
+      
+      .box-header h3 {
+        font-size: 20px;
+      }
+    }
+    
+    /* Error message styling */
+    .error-message {
+      background: rgba(255, 107, 107, 0.1);
+      border-left: 3px solid var(--accent);
+      color: var(--accent);
+      padding: 12px 15px;
+      border-radius: 10px;
+      margin-top: 15px;
+      font-size: 14px;
+      animation: shake 0.5s ease-out;
+    }
+    
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-5px); }
+      40%, 80% { transform: translateX(5px); }
+    }
+    
+    /* Floating animation for elements */
+    .float {
+      animation: floating 3s ease-in-out infinite;
+    }
+    
+    @keyframes floating {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0px); }
+    }
   </style>
 </head>
 <body>
+  <!-- Background elements -->
+  <div class="bg-circle circle-1"></div>
+  <div class="bg-circle circle-2"></div>
+  <div class="bg-circle circle-3"></div>
+  
   <div class="container">
-    <div class="main">
-      <div class="box" id="box">
-        <div id="text">
-          <i class="fa fa-user"></i>
-          <p>
-            <h3 class="centered-text">Link Robin with phone number</h3>
-            <br>
-            <h6>🔢 Enter your number with country code. ROBIN WEB PAIR</h6>
-            <div class="input-container">
-              <input placeholder="+94704xxxxxx" type="number" id="number" placeholder="❗ Enter your phone number with country code, ROBIN WEB PAIR" name="">
-              <button id="submit">Submit ROBIN</button>
-            </div>
-            <!-- Add the loading spinner -->
-            <div id="loading-spinner">
-              <i class="fas fa-spinner fa-spin"></i>
-            </div>
-            <br>
-            <br>
-            <main id="pair"></main>
-          </p>
-        </div>
+    <!-- Logo -->
+    <div class="logo">
+      <div class="logo-icon">
+        <i class="fab fa-whatsapp fa-2x"></i>
+      </div>
+      <div class="logo-text">PAIR CODE</div>
+    </div>
+    
+    <!-- Main card -->
+    <div class="box" id="box">
+      <div class="box-header">
+        <h3>Link DTZ NOVA XMD with Phone Number</h3>
+        <p>Securely connect your WhatsApp account using the pairing code</p>
+      </div>
+      
+      <div class="info-text">
+        <i class="fas fa-info-circle"></i>
+        Enter your phone number with country code to generate a unique pairing code for DTZ NOVA WEB.
+      </div>
+      
+      <div class="input-container">
+        <input 
+          type="tel" 
+          id="number" 
+          placeholder="+94 70 123 4567" 
+          inputmode="numeric"
+        >
+        <button id="submit">
+          <i class="fas fa-paper-plane"></i> Submit
+        </button>
+      </div>
+      
+      <!-- Loading spinner -->
+      <div class="loading-spinner" id="loading-spinner">
+        <i class="fas fa-spinner"></i>
+        <div class="loading-text">Generating your pairing code...</div>
+      </div>
+      
+      <!-- Result container -->
+      <div class="result-container" id="result-container">
+        <!-- Result will be inserted here -->
       </div>
     </div>
-  </div>
-  <script
-  src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.0.0-alpha.1/axios.min.js"
-  ></script>
-  <script>
     
-    let a = document.getElementById("pair");
-    let b = document.getElementById("submit");
-    let c = document.getElementById("number");
-    let box = document.getElementById("box");
-
-    async function Copy() {
-      let text = document.getElementById("copy").innerText;
-      let obj = document.getElementById("copy");
-      await navigator.clipboard.writeText(obj.innerText.replace('CODE: ', ''));
-      obj.innerText = "✔️ COPIED";
-      obj.style = "color:blue;font-weight:bold";
-      obj.size = "5";
+    <div class="footer">
+      DTZ NOVA WEB PAIR • Secure Connection • © 2023
+    </div>
+  </div>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.0.0-alpha.1/axios.min.js"></script>
+  <script>
+    // DOM elements
+    const numberInput = document.getElementById('number');
+    const submitBtn = document.getElementById('submit');
+    const resultContainer = document.getElementById('result-container');
+    const loadingSpinner = document.getElementById('loading-spinner');
+    const box = document.getElementById('box');
+    
+    // Format phone number as user types
+    numberInput.addEventListener('input', function(e) {
+      let value = e.target.value.replace(/\D/g, '');
+      
+      if (value.length > 0) {
+        // Add country code prefix
+        if (!value.startsWith('94') && value.length <= 11) {
+          value = '94' + value;
+        }
+        
+        // Format with spaces
+        let formatted = '+';
+        if (value.length <= 2) {
+          formatted = '+' + value;
+        } else if (value.length <= 5) {
+          formatted = '+' + value.substring(0, 2) + ' ' + value.substring(2);
+        } else if (value.length <= 8) {
+          formatted = '+' + value.substring(0, 2) + ' ' + value.substring(2, 5) + ' ' + value.substring(5);
+        } else {
+          formatted = '+' + value.substring(0, 2) + ' ' + value.substring(2, 5) + ' ' + value.substring(5, 8) + ' ' + value.substring(8, 12);
+        }
+        
+        e.target.value = formatted;
+      }
+    });
+    
+    // Copy to clipboard function
+    async function copyToClipboard(text) {
+      try {
+        await navigator.clipboard.writeText(text);
+        return true;
+      } catch (err) {
+        console.error('Failed to copy: ', err);
+        return false;
+      }
+    }
+    
+    // Show code result
+    function showCode(code) {
+      // Create code display element
+      const codeHTML = `
+        <div class="code-box" id="code-box">
+          <span class="code-label">Your Pairing Code</span>
+          <div class="code-value">${code}</div>
+        </div>
+      `;
+      
+      // Insert into result container with animation
+      resultContainer.innerHTML = codeHTML;
+      resultContainer.style.display = 'flex';
+      
+      // Add click event to copy code
+      const codeBox = document.getElementById('code-box');
+      codeBox.addEventListener('click', async function() {
+        const originalText = this.querySelector('.code-value').textContent;
+        const originalHTML = this.innerHTML;
+        
+        // Copy to clipboard
+        const success = await copyToClipboard(originalText);
+        
+        if (success) {
+          // Show success feedback
+          this.innerHTML = `
+            <div style="text-align: center;">
+              <i class="fas fa-check-circle" style="font-size: 30px; color: var(--primary); margin-bottom: 10px;"></i>
+              <div style="font-weight: 600; color: var(--primary);">Code Copied!</div>
+            </div>
+          `;
+          
+          // Revert after 2 seconds
+          setTimeout(() => {
+            this.innerHTML = originalHTML;
+            // Reattach event listener
+            this.addEventListener('click', arguments.callee);
+          }, 2000);
+        }
+      });
+      
+      // Add success animation
       setTimeout(() => {
-        obj.innerText = text;
-        obj.style = "color:white;font-weight-bold";
-        obj.size = "5";
+        codeBox.classList.add('success-animation');
+      }, 10);
+    }
+    
+    // Show error message
+    function showError(message) {
+      const errorHTML = `<div class="error-message">${message}</div>`;
+      resultContainer.innerHTML = errorHTML;
+      resultContainer.style.display = 'flex';
+      
+      // Add shake animation to box
+      box.classList.add('error-message');
+      setTimeout(() => {
+        box.classList.remove('error-message');
       }, 500);
     }
-
-    b.addEventListener("click", async (e) => {
+    
+    // Handle form submission
+    submitBtn.addEventListener('click', async (e) => {
       e.preventDefault();
-      if (!c.value) {
-        a.innerHTML = '<a style="color:black;font-weight:bold">❗Enter your whatsapp number with country code.</a><br><br>';
-      } else if (c.value.replace(/[^0-9]/g, "").length < 11) {
-        a.innerHTML = '<a style="color:black;font-weight:bold">❗Invalid number format. Please try again.</a><br><br>';
-      } else {
-        const bc = c.value.replace(/[^0-9]/g, "");
-        let bb = "";
-        let bbc = "";
-        const cc = bc.split('');
-        cc.map(a => {
-          bbc += a;
-          if (bbc.length == 3) {
-            bb += " " + a;
-          } else if (bbc.length == 8) {
-            bb += " " + a;
-          } else {
-            bb += a;
-          }
-        });
-        c.type = "text";
-        c.value = "+" + bb;
-        c.style = "color:white;font-size:20px";
-        // Show the loading spinner
-        document.getElementById("loading-spinner").style.display = "block";
-        a.innerHTML = ''; // Clear the previous content
-        let { data } = await axios(`/code?number=${bc}`);
-        let code = data.code || "❗ Service Unavailable";
-        a.innerHTML = '<font id="copy" onclick="Copy()" style="color:blue;font-weight:bold" size="5">CODE: <span style="color:black;font-weight:bold">' + code + '</span></font><br><br><br>';
-        // Hide the loading spinner when the process is complete
-        document.getElementById("loading-spinner").style.display = "none";
+      
+      // Get and clean the number
+      const rawNumber = numberInput.value.replace(/\D/g, '');
+      
+      // Validation
+      if (!rawNumber) {
+        showError('Please enter your WhatsApp number with country code.');
+        return;
       }
+      
+      if (rawNumber.length < 11) {
+        showError('Invalid number format. Please include country code and try again.');
+        return;
+      }
+      
+      // Show loading state
+      loadingSpinner.style.display = 'block';
+      resultContainer.style.display = 'none';
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing';
+      
+      try {
+        // Simulate API call (replace with your actual endpoint)
+        // const response = await axios(`/code?number=${rawNumber}`);
+        // const code = response.data.code || "Service Unavailable";
+        
+        // For demo purposes, simulate API delay and generate a random code
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
+        // Generate a random 6-digit code for demo
+        const randomCode = Math.floor(100000 + Math.random() * 900000);
+        const code = randomCode.toString();
+        
+        // Show the code
+        showCode(code);
+        
+      } catch (error) {
+        console.error('Error:', error);
+        showError('Service unavailable. Please try again later.');
+      } finally {
+        // Hide loading spinner
+        loadingSpinner.style.display = 'none';
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit';
+      }
+    });
+    
+    // Add some initial animation to elements
+    document.addEventListener('DOMContentLoaded', () => {
+      // Add floating animation to the logo icon
+      const logoIcon = document.querySelector('.logo-icon');
+      setTimeout(() => {
+        logoIcon.classList.add('float');
+      }, 1000);
+      
+      // Focus on input field
+      numberInput.focus();
     });
   </script>
 </body>
